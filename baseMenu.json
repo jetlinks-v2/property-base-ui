@@ -1,0 +1,446 @@
+[
+  {
+    "id": "charging-basic",
+    "code": "charging/basic",
+    "name": "物业基础管理",
+    "url": "/charging/basic",
+    "owner": "app",
+    "sortIndex": 71,
+    "i18nMessages": {
+      "name": {
+        "zh_CN": "物业基础管理",
+        "en_US": "Property basic management",
+        "en": "Property basic management"
+      }
+    },
+    "permissions": [],
+    "buttons": [],
+    "children": [
+      {
+        "id": "charging-OrganizationType",
+        "code": "charging/OrganizationType",
+        "name": "组织配置",
+        "url": "/charging/basic/organizations",
+        "owner": "app",
+        "sortIndex": 1,
+        "i18nMessages": {
+          "name": {
+            "zh_CN": "组织配置",
+            "en_US": "Organization configuration",
+            "en": "Organization configuration"
+          }
+        },
+        "permissions": [
+          {
+            "permission": "property-organization",
+            "actions": ["query"]
+          }
+        ],
+        "buttons": [
+          {
+            "id": "save",
+            "name": "标注类型",
+            "i18nMessages": {
+              "zh_CN": "标注类型",
+              "en_US": "Set type",
+              "en": "Set type"
+            },
+            "permissions": [
+              {
+                "permission": "property-organization",
+                "actions": ["save"]
+              }
+            ]
+          },
+          {
+            "id": "sync",
+            "name": "同步组织",
+            "i18nMessages": {
+              "zh_CN": "同步组织",
+              "en_US": "Sync organizations",
+              "en": "Sync organizations"
+            },
+            "permissions": [
+              {
+                "permission": "property-organization",
+                "actions": ["sync"]
+              }
+            ]
+          },
+          {
+            "id": "bind",
+            "name": "绑定空间",
+            "i18nMessages": {
+              "zh_CN": "绑定空间",
+              "en_US": "Bind space",
+              "en": "Bind space"
+            },
+            "permissions": [
+              {
+                "permission": "property-space",
+                "actions": ["save"]
+              }
+            ]
+          },
+          {
+            "id": "spaceSync",
+            "name": "同步空间",
+            "i18nMessages": {
+              "zh_CN": "同步空间",
+              "en_US": "Sync spaces",
+              "en": "Sync spaces"
+            },
+            "permissions": [
+              {
+                "permission": "property-space",
+                "actions": ["sync"]
+              }
+            ]
+          },
+          {
+            "id": "seal",
+            "name": "维护项目章",
+            "i18nMessages": {
+              "zh_CN": "维护项目章",
+              "en_US": "Manage project seal",
+              "en": "Manage project seal"
+            },
+            "permissions": [
+              {
+                "permission": "property-organization",
+                "actions": ["seal"]
+              }
+            ]
+          }
+        ],
+        "assetType": "organization",
+        "showPage": ["property-organization"],
+        "icon": "ApartmentOutlined"
+      },
+      {
+        "id": "charging-User",
+        "code": "charging/User",
+        "name": "用户管理",
+        "url": "/charging/basic/users",
+        "owner": "app",
+        "sortIndex": 2,
+        "i18nMessages": {
+          "name": {
+            "zh_CN": "用户管理",
+            "en_US": "Users",
+            "en": "Users"
+          }
+        },
+        "permissions": [
+          {
+            "permission": "property-user",
+            "actions": ["query"]
+          }
+        ],
+        "buttons": [
+          {
+            "id": "save",
+            "name": "标注身份",
+            "i18nMessages": {
+              "zh_CN": "标注身份",
+              "en_US": "Set identity",
+              "en": "Set identity"
+            },
+            "permissions": [
+              {
+                "permission": "property-user",
+                "actions": ["save"]
+              }
+            ]
+          },
+          {
+            "id": "sync",
+            "name": "同步用户",
+            "i18nMessages": {
+              "zh_CN": "同步用户",
+              "en_US": "Sync users",
+              "en": "Sync users"
+            },
+            "permissions": [
+              {
+                "permission": "property-user",
+                "actions": ["sync"]
+              }
+            ]
+          }
+        ],
+        "assetType": "user",
+        "showPage": ["property-user"],
+        "icon": "TeamOutlined"
+      },
+      {
+        "id": "charging-Space",
+        "code": "charging/Space",
+        "name": "空间管理",
+        "url": "/charging/basic/spaces",
+        "owner": "app",
+        "sortIndex": 3,
+        "i18nMessages": {
+          "name": {
+            "zh_CN": "空间管理",
+            "en_US": "Space management",
+            "en": "Space management"
+          }
+        },
+        "permissions": [
+          {
+            "permission": "property-house",
+            "actions": ["query"]
+          },
+          {
+            "permission": "property-space",
+            "actions": ["query"]
+          },
+          {
+            "permission": "property-dictionary",
+            "actions": ["query"]
+          }
+        ],
+        "buttons": [
+          {
+            "id": "save",
+            "name": "保存",
+            "i18nMessages": {
+              "zh_CN": "保存",
+              "en_US": "Save",
+              "en": "Save"
+            },
+            "permissions": [
+              {
+                "permission": "property-house",
+                "actions": ["save"]
+              }
+            ]
+          },
+          {
+            "id": "delete",
+            "name": "删除",
+            "i18nMessages": {
+              "zh_CN": "删除",
+              "en_US": "Delete",
+              "en": "Delete"
+            },
+            "permissions": [
+              {
+                "permission": "property-house",
+                "actions": ["delete"]
+              }
+            ]
+          },
+          {
+            "id": "import",
+            "name": "导入",
+            "i18nMessages": {
+              "zh_CN": "导入",
+              "en_US": "Import",
+              "en": "Import"
+            },
+            "permissions": [
+              {
+                "permission": "property-house",
+                "actions": ["import"]
+              }
+            ]
+          },
+          {
+            "id": "export",
+            "name": "导出",
+            "i18nMessages": {
+              "zh_CN": "导出",
+              "en_US": "Export",
+              "en": "Export"
+            },
+            "permissions": [
+              {
+                "permission": "property-house",
+                "actions": ["export"]
+              }
+            ]
+          },
+          {
+            "id": "sync",
+            "name": "同步空间",
+            "i18nMessages": {
+              "zh_CN": "同步空间",
+              "en_US": "Sync",
+              "en": "Sync"
+            },
+            "permissions": [
+              {
+                "permission": "property-space",
+                "actions": ["sync"]
+              }
+            ]
+          }
+        ],
+        "assetType": "space",
+        "showPage": ["property-house"],
+        "icon": "HomeOutlined"
+      },
+      {
+        "id": "charging-Customer",
+        "code": "charging/Customer",
+        "name": "客户管理",
+        "url": "/charging/basic/customers",
+        "owner": "app",
+        "sortIndex": 4,
+        "i18nMessages": {
+          "name": {
+            "zh_CN": "客户管理",
+            "en_US": "Customer management",
+            "en": "Customer management"
+          }
+        },
+        "permissions": [
+          {
+            "permission": "property-customer",
+            "actions": ["query"]
+          },
+          {
+            "permission": "property-space",
+            "actions": ["query"]
+          },
+          {
+            "permission": "property-dictionary",
+            "actions": ["query"]
+          },
+          {
+            "permission": "property-house",
+            "actions": ["query"]
+          }
+        ],
+        "buttons": [
+          {
+            "id": "save",
+            "name": "保存",
+            "i18nMessages": {
+              "zh_CN": "保存",
+              "en_US": "Save",
+              "en": "Save"
+            },
+            "permissions": [
+              {
+                "permission": "property-customer",
+                "actions": ["save"]
+              },
+              {
+                "permission": "property-user",
+                "actions": ["query"]
+              }
+            ]
+          },
+          {
+            "id": "delete",
+            "name": "删除",
+            "i18nMessages": {
+              "zh_CN": "删除",
+              "en_US": "Delete",
+              "en": "Delete"
+            },
+            "permissions": [
+              {
+                "permission": "property-customer",
+                "actions": ["delete"]
+              }
+            ]
+          },
+          {
+            "id": "import",
+            "name": "导入",
+            "i18nMessages": {
+              "zh_CN": "导入",
+              "en_US": "Import",
+              "en": "Import"
+            },
+            "permissions": [
+              {
+                "permission": "property-customer",
+                "actions": ["import"]
+              }
+            ]
+          },
+          {
+            "id": "export",
+            "name": "导出",
+            "i18nMessages": {
+              "zh_CN": "导出",
+              "en_US": "Export",
+              "en": "Export"
+            },
+            "permissions": [
+              {
+                "permission": "property-customer",
+                "actions": ["export"]
+              }
+            ]
+          }
+        ],
+        "assetType": "organization",
+        "showPage": ["property-customer"],
+        "icon": "TeamOutlined"
+      },
+      {
+        "id": "charging-Dictionary",
+        "code": "charging/Dictionary",
+        "name": "字典配置",
+        "url": "/charging/basic/dictionaries",
+        "owner": "app",
+        "sortIndex": 5,
+        "i18nMessages": {
+          "name": {
+            "zh_CN": "字典配置",
+            "en_US": "Dictionaries",
+            "en": "Dictionaries"
+          }
+        },
+        "permissions": [
+          {
+            "permission": "property-dictionary",
+            "actions": ["query"]
+          }
+        ],
+        "buttons": [
+          {
+            "id": "save",
+            "name": "保存",
+            "i18nMessages": {
+              "zh_CN": "保存",
+              "en_US": "Save",
+              "en": "Save"
+            },
+            "permissions": [
+              {
+                "permission": "property-dictionary",
+                "actions": ["save"]
+              }
+            ]
+          },
+          {
+            "id": "delete",
+            "name": "删除",
+            "i18nMessages": {
+              "zh_CN": "删除",
+              "en_US": "Delete",
+              "en": "Delete"
+            },
+            "permissions": [
+              {
+                "permission": "property-dictionary",
+                "actions": ["delete"]
+              }
+            ]
+          }
+        ],
+        "assetType": "organization",
+        "showPage": ["property-dictionary"],
+        "icon": "BookOutlined"
+      }
+    ],
+    "icon": "ApartmentOutlined"
+  }
+]

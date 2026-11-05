@@ -1,0 +1,52 @@
+.organization-detail {
+  padding: 28px;
+  min-width: 0;
+}
+.organization-detail__heading {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+h2 {
+  margin: 0;
+  font-size: 22px;
+  overflow-wrap: anywhere;
+}
+h3 {
+  margin: 0 0 16px;
+  font-size: 15px;
+}
+.organization-detail__parent,
+.organization-detail__hint {
+  color: var(--color-jet-text-secondary, #777);
+}
+.organization-detail__parent {
+  margin: 10px 0 28px;
+  overflow-wrap: anywhere;
+}
+.organization-detail__type {
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--color-jet-border, #eee);
+}
+.organization-detail__hint {
+  margin: 12px 0;
+  font-size: 12px;
+}
+.organization-detail__actions {
+  display: flex;
+  margin-top: 16px;
+  gap: 12px;
+  align-items: center;
+}
+.organization-detail__info {
+  padding-top: 24px;
+}
+.organization-detail__info :deep(.ant-descriptions-item-content) {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 700px) {
+  .organization-detail {
+    padding: 20px 16px;
+  }
+}

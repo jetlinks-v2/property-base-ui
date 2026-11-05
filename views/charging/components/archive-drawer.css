@@ -1,0 +1,176 @@
+.charging-drawer .drawer-shell {
+  background: var(--ant-color-bg-container, #fff);
+  color: var(--ant-color-text, #1f2329);
+}
+.charging-drawer .drawer-head {
+  background: var(--ant-color-bg-container, #fff);
+  padding: 22px 28px;
+  border-bottom: 1px solid var(--ant-color-border-secondary, #e8ecf1);
+  gap: 12px;
+}
+.charging-drawer .drawer-head .head-copy > b {
+  font-size: 18px;
+  font-weight: 600;
+}
+.charging-drawer .drawer-head .head-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  color: var(--ant-color-primary, #1677ff);
+  background: var(--ant-color-primary-bg, #e6f4ff);
+}
+.charging-drawer .drawer-head .close {
+  color: var(--ant-color-text-secondary, #595959);
+}
+.charging-drawer .drawer-body {
+  padding: 28px;
+  background: var(--ant-color-bg-container, #fff);
+}
+.charging-drawer .drawer-foot {
+  padding: 16px 28px;
+  background: var(--ant-color-bg-container, #fff);
+  border-top: 1px solid var(--ant-color-border-secondary, #e8ecf1);
+  gap: 12px;
+}
+.charging-drawer .drawer-foot .ant-btn {
+  min-width: 88px;
+}
+.charging-drawer .archive-stack {
+  gap: 28px;
+}
+.charging-drawer .archive-path {
+  margin-bottom: 0;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--ant-color-border-secondary, #e8ecf1);
+}
+.charging-drawer .archive-path strong {
+  font-size: 22px;
+  font-weight: 600;
+}
+.charging-drawer .archive-form {
+  column-gap: 24px;
+}
+.charging-drawer .archive-form .ant-form-item {
+  margin-bottom: 24px;
+}
+.charging-drawer .archive-form .ant-form-item-label > label {
+  color: var(--ant-color-text-secondary, #595959);
+  font-size: 13px;
+}
+.charging-drawer .archive-form .ant-input,
+.charging-drawer .archive-form .ant-select-selector,
+.charging-drawer .archive-form .ant-picker,
+.charging-drawer .archive-form .ant-input-number {
+  border-radius: 6px;
+}
+.charging-drawer .archive-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 6px 0 20px;
+  color: var(--ant-color-text, #1f2329);
+}
+.charging-drawer .archive-section-title.wide:not(:first-child) {
+  border-top: 1px solid var(--ant-color-border-secondary, #e8ecf1);
+  padding-top: 24px;
+  margin-top: 0;
+}
+.charging-drawer .archive-section-title .anticon {
+  color: var(--ant-color-primary, #1677ff);
+  font-size: 17px;
+}
+.charging-drawer .archive-field-hint {
+  color: var(--ant-color-text-secondary, #595959);
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 0 0 24px;
+}
+.charging-drawer .archive-mode {
+  display: flex;
+  margin-bottom: 24px;
+}
+.charging-drawer .archive-mode .ant-radio-button-wrapper {
+  flex: 1;
+  text-align: center;
+  height: 38px;
+  line-height: 36px;
+}
+.charging-drawer .ant-alert {
+  margin-bottom: 20px;
+}
+.charging-drawer .archive-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--ant-color-border-secondary, #e8ecf1);
+}
+.charging-drawer .archive-summary__icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 24px;
+  color: var(--ant-color-primary, #1677ff);
+  background: var(--ant-color-primary-bg, #e6f4ff);
+  border-radius: 12px;
+}
+.charging-drawer .archive-summary h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+.charging-drawer .archive-summary p {
+  color: var(--ant-color-text-secondary, #595959);
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.charging-drawer .archive-detail-group {
+  margin-bottom: 28px;
+}
+.charging-drawer ::selection {
+  background: var(--ant-color-primary-bg, #e6f4ff);
+}
+.charging-drawer .ant-input,
+.charging-drawer textarea {
+  caret-color: var(--ant-color-primary, #1677ff);
+}
+.charging-drawer button:focus-visible {
+  outline: 2px solid var(--ant-color-primary, #1677ff);
+  outline-offset: 3px;
+}
+@media (max-width: 680px) {
+  .charging-drawer .drawer-head {
+    padding: 18px;
+  }
+  .charging-drawer .drawer-body {
+    padding: 20px 18px;
+  }
+  .charging-drawer .drawer-foot {
+    padding: 14px 18px;
+  }
+  .charging-drawer .archive-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+.charging-drawer .kv-grid .kv-cell dt {
+  color: var(--ant-color-text-secondary, #595959);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.charging-drawer .kv-grid .kv-cell dd {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.charging-drawer .archive-remark {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+}
