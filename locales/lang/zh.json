@@ -106,6 +106,9 @@
     "syncing": "同步中…"
   },
   "Archive": {
+    "pendingProfile": "待完善",
+    "pendingBinding": "待绑定",
+
     "project": "所属项目",
     "selectProject": "选择项目",
     "lastSync": "最近同步",

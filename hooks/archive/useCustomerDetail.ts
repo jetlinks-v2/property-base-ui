@@ -97,14 +97,14 @@ export function useCustomerDetail(scope: Scope, reload: () => void) {
   function save() {
     const current = customer.value,
       selected = record.value
-    if (!current || !selected || !editing.value || history.value) return
+    if (!current || !editing.value || history.value) return
     return mutate(() =>
       saveCustomer(scope, current.id, {
         ...profilePayload(profile, current.customerType),
         version: current.version,
-        relationshipId: selected.id,
-        relationshipVersion: selected.version,
-        nature: current.customerType === 'person' ? relation.nature : undefined
+        relationshipId: selected?.id,
+        relationshipVersion: selected?.version,
+        nature: selected && current.customerType === 'person' ? relation.nature : undefined
       })
     )
   }

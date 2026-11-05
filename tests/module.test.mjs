@@ -78,24 +78,31 @@ test('宿主独立收集公共菜单和页面，收费不再重复发布；公�
     }
   })
   const menus = modules.getModulesMenu()
-  assert.equal(menus.length, 1)
-  assert.equal(menus[0].name, '物业基础管理')
-  assert.equal(menus[0].id, 'charging-basic')
-  assert.equal(menus[0].options?.appName, undefined)
-  assert.equal(menus[0].children.length, 5)
+  // 收费可继续增加自己的业务菜单；公共基础目录只能由公共模块提供一份。
+  const publicMenus = menus.filter(menu => menu.code === 'charging/basic')
+  assert.equal(publicMenus.length, 1)
+  const publicMenu = publicMenus[0]
+  assert.equal(publicMenu.name, '物业基础管理')
+  assert.equal(publicMenu.id, 'charging-basic')
+  assert.equal(publicMenu.options?.appName, undefined)
+  assert.equal(publicMenu.children.length, 5)
+  assert.equal(chargingMenu.default().some(menu => menu.code === 'charging/basic'), false)
   const routes = shared.default.getAsyncRoutesMap()
-  for (const menu of menus[0].children) {
+  for (const menu of publicMenu.children) {
     assert.equal(typeof routes[menu.code], 'function', `缺少既有菜单 ${menu.code} 的页面`)
     const filename = await routes[menu.code]()
     assert.ok(readFileSync(filename, 'utf8').includes('<template>'))
     assert.equal(menu.runtime, true)
   }
   assert.deepEqual(charging.default.getAsyncRoutesMap(), {})
-  const space = menus[0].children.find((menu) => menu.code === 'charging/Space')
+  const space = publicMenu.children.find((menu) => menu.code === 'charging/Space')
   assert.equal(space.buttons.find((button) => button.id === 'save').permissions[0].permission, 'property-house')
   modules.registerModule()
   assert.equal(resources.size, 2)
-  assert.deepEqual(resources.get('charging-management-ui').apis, {})
+  const chargingApis = resources.get('charging-management-ui').apis
+  for (const name of ['getOrganizationTree', 'getProjectOptions', 'getSpaceTree', 'queryPropertyUsers']) {
+    assert.equal(chargingApis[name], undefined, `收费不应重复注册公共资源 ${name}`)
+  }
   const sharedResources = resources.get('property-base-ui')
   assert.deepEqual(Object.keys(sharedResources.components).sort(), ['ProjectSelect', 'SpaceInformation', 'UserIdentityTags'])
   const response = await sharedResources.apis.getOrganizationTree()

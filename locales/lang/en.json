@@ -106,6 +106,9 @@
     "syncing": "Syncing…"
   },
   "Archive": {
+    "pendingProfile": "Pending completion",
+    "pendingBinding": "Pending binding",
+
     "project": "Project",
     "selectProject": "Select project",
     "lastSync": "Last synced",

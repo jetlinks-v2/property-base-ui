@@ -81,6 +81,8 @@ const save = async () => {
             <a-tag color="blue">{{ t(k + customer.customerType) }}</a-tag>
             <a-tag v-if="customer.deleted">{{ t(k + 'deleted') }}</a-tag>
             <a-tag v-if="historical">{{ t(k + 'history') }}</a-tag>
+            <a-tag v-if="customer.profileComplete === false" color="orange">{{ t(k + 'pendingProfile') }}</a-tag>
+            <a-tag v-if="customer.pendingBinding">{{ t(k + 'pendingBinding') }}</a-tag>
           </div>
         </div>
 
@@ -105,7 +107,7 @@ const save = async () => {
             </div>
           </SectionCard>
           <SectionCard
-            v-if="customer.customerType === 'person'"
+            v-if="customer.customerType === 'person' && state.record.value"
             icon="TeamOutlined"
             :title="t(k + 'nature')"
           >

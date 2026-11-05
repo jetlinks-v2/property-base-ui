@@ -107,6 +107,8 @@ export interface Customer extends CustomerProfile {
   customerType: 'person' | 'company'
   version: number
   deleted: boolean
+  profileComplete?: boolean
+  pendingBinding?: boolean
   createTime?: number
   modifyTime?: number
   relationships: Relationship[]

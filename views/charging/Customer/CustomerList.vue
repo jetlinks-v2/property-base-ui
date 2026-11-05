@@ -136,6 +136,8 @@ const change = ({ filter }: ConditionFilterChangePayload) => {
   >
     <template #customer="record">
       <b>{{ customer(record)?.name || '—' }}</b>
+      <a-tag v-if="customer(record)?.profileComplete === false" color="orange">{{ t(k + 'pendingProfile') }}</a-tag>
+      <a-tag v-if="customer(record)?.pendingBinding" color="default">{{ t(k + 'pendingBinding') }}</a-tag>
     </template>
     <template #customerType="record">
       <a-tag>{{ customer(record) ? t(k + customer(record)!.customerType) : '—' }}</a-tag>
@@ -175,6 +177,7 @@ const change = ({ filter }: ConditionFilterChangePayload) => {
             {{ t(k + 'edit') }}
           </j-permission-button>
           <a-popconfirm
+            v-if="record.relationships.length"
             :title="t(k + 'deleteCustomerConfirm')"
             :disabled="detail.busy.value"
             @confirm="detail.removeRelation(record.relationships[0])"
