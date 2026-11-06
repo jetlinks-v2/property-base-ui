@@ -113,6 +113,8 @@
             ]
           }
         ],
+        "accessSupport": { "text": "支持", "value": "support" },
+        "supportDataAccess": true,
         "assetType": "organization",
         "showPage": ["property-organization"],
         "icon": "ApartmentOutlined"
@@ -169,6 +171,8 @@
             ]
           }
         ],
+        "accessSupport": { "text": "支持", "value": "support" },
+        "supportDataAccess": true,
         "assetType": "user",
         "showPage": ["property-user"],
         "icon": "TeamOutlined"
@@ -278,6 +282,8 @@
             ]
           }
         ],
+        "accessSupport": { "text": "支持", "value": "support" },
+        "supportDataAccess": true,
         "assetType": "space",
         "showPage": ["property-house"],
         "icon": "HomeOutlined"
@@ -380,6 +386,8 @@
             ]
           }
         ],
+        "accessSupport": { "text": "支持", "value": "support" },
+        "supportDataAccess": true,
         "assetType": "organization",
         "showPage": ["property-customer"],
         "icon": "TeamOutlined"
@@ -436,6 +444,8 @@
             ]
           }
         ],
+        "accessSupport": { "text": "支持", "value": "support" },
+        "supportDataAccess": true,
         "assetType": "organization",
         "showPage": ["property-dictionary"],
         "icon": "BookOutlined"

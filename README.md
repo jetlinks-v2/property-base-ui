@@ -20,6 +20,14 @@ pnpm --filter property-base-ui build
 
 单模块构建输出 `modules/property-base-ui/dist`，包含 `baseMenu.json`。
 
+## 数据权限配置
+
+基础菜单涉及的组织、用户、空间资产须在 `baseMenu.json` 声明 `accessSupport.value: support`，与 SaaS 自带菜单保持一致；仅配置 `assetType` 不会提供数据权限候选项。
+
+修复范围仅为本模块已有五个基础菜单，不变更菜单 ID、按钮授权或后端资产校验。更新后重新初始化这些菜单，再在“运维中心 → 应用模版 → 收费管理 → 配置”设置数据权限，并重新保存应用角色授权。按所属组织管理项目时使用“本组织及下级”对应的 `org-include-children` 策略；不要以“不限制”替代组织权限。
+
+菜单声明本身不会授予用户新的数据范围。保存授权后，重新登录普通账号，核对 `/authorize/me` 中角色的组织数据策略及 `/property/organization/_tree` 返回范围，同时验证无关组织不可见。该运行时授权验证需在实际保存配置后执行。
+
 ## 目录职责
 
 ```text
