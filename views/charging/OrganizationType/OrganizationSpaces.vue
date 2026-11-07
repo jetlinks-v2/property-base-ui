@@ -12,7 +12,7 @@ interface TreeNode {
 const toTree = (nodes: import('../../../api/archive').Space[]): TreeNode[] =>
   nodes.map((node) => ({
     key: node.id,
-    title: node.spaceTypeName ? `${node.name} · ${node.spaceTypeName}` : node.name,
+    title: node.name,
     children: toTree(node.children || [])
   }))
 const props = defineProps<{ organizationId: string; organizationType?: OrganizationTypeValue; disabled: boolean }>()

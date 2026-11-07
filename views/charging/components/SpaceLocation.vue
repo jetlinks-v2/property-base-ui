@@ -7,15 +7,9 @@ const { t } = useI18n()
   <div class="space-location">
     <span class="space-location__icon"><AIcon type="EnvironmentOutlined" /></span>
     <div>
-      <span class="space-location__label">{{ t('Archive.spaceInformation') }}</span>
+      <span class="space-location__label">{{ t('Archive.spacePath') }}</span>
       <strong>
         {{ space.name }}
-        <a-tag
-          v-if="space.spaceTypeName"
-          color="blue"
-        >
-          {{ space.spaceTypeName }}
-        </a-tag>
       </strong>
       <p>{{ space.fullName || space.name }}</p>
     </div>

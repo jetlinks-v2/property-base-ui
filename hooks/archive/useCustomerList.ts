@@ -10,8 +10,8 @@ export function useCustomerList(scope: Scope, space?: Space) {
   const houseCompleted = ref(false)
   let disposed = false
   async function loadHouse() {
-    // 所选节点必须是真正末端且资料已完善，父节点即使可见 children 为空也不能创建客户。
-    if (!space?.leaf) return
+    // 任意层级均可关联客户，资格由已完善资料决定；来源 leaf 不再作为业务门禁。
+    if (!space) return
     houseLoading.value = true
     houseFailed.value = false
     try {

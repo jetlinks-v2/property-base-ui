@@ -13,7 +13,7 @@ export const filterSpaces = (nodes: Space[], keyword: string): Space[] =>
       ? [{ ...node, children }]
       : []
   })
-/** 来源 leaf 是完整来源树的事实；可见子树无 children 不代表能维护房屋。 */
+/** 来源 leaf 保留完整来源树的事实；资料完善和客户关联不依赖节点层级。 */
 export function useArchiveScope() {
   const organizations = ref<PropertyOrganization[]>([])
   const projects = computed(() =>

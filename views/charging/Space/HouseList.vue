@@ -3,10 +3,11 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { onlyMessage } from '@jetlinks-web/utils'
 import { requestErrorMessage } from '../../../utils/requestError'
-import ConditionFilter, { type ConditionFilterChangePayload } from '@jetlinks-web-core/components/ConditionFilter'
+import ConditionFilter from '@jetlinks-web-core/components/ConditionFilter'
 import { checked, deleteHouse, queryHouses, type House, type Query, type Scope, type Space } from '../../../api/archive'
 import { useDictionaries } from '../../../hooks/archive/useDictionaries'
 import { useHouseEditor } from '../../../hooks/archive/useHouseEditor'
+import { useHouseQuery } from '../../../hooks/archive/useHouseQuery'
 import HouseEditor from './HouseEditor.vue'
 import ExcelActions from '../components/ExcelActions.vue'
 const props = defineProps<{ scope: Scope; space?: Space; projectName?: string }>()
@@ -31,21 +32,9 @@ const failed = ref(false)
 watch(failed, (value) => {
   if (value) onlyMessage(t(k + 'loadFailed'), 'error')
 })
-const terms = ref([])
-const params = ref<Query>({ terms: [] })
+const { completion, terms, params, change } = useHouseQuery()
 const fields = computed(() => [
   { title: t(k + 'spaceName'), dataIndex: 'name', search: { type: 'string' } },
-  {
-    title: t(k + 'completed'),
-    dataIndex: 'completed',
-    search: {
-      type: 'select',
-      options: [
-        { label: t(k + 'complete'), value: true },
-        { label: t(k + 'incomplete'), value: false }
-      ]
-    }
-  },
   {
     title: t(k + 'houseType'),
     dataIndex: 'houseType',
@@ -63,7 +52,7 @@ const columns = computed(() => [
   { title: t(k + 'completed'), dataIndex: 'completed', scopedSlots: true, width: 110 },
   { title: t(k + 'houseType'), dataIndex: 'houseType', scopedSlots: true, width: 110 },
   { title: t(k + 'houseState'), dataIndex: 'houseState', scopedSlots: true, width: 110 },
-  { title: t(k + 'billingArea'), dataIndex: 'billingArea', width: 130 },
+  { title: t(k + 'billingArea'), dataIndex: 'billingArea', width: 130, columnEmpty: '—' },
   { title: t(k + 'actions'), dataIndex: 'actions', scopedSlots: true, width: 280 }
 ])
 async function request(query: Query, context?: { signal: AbortSignal }) {
@@ -76,9 +65,6 @@ async function request(query: Query, context?: { signal: AbortSignal }) {
     if (!context?.signal.aborted) failed.value = true
     throw cause
   }
-}
-const change = ({ filter }: ConditionFilterChangePayload) => {
-  params.value = { terms: filter.terms as Query['terms'] }
 }
 async function remove(record: House) {
   try {
@@ -97,6 +83,16 @@ async function remove(record: House) {
     @change="change"
   />
   <div class="archive-actions">
+    <a-radio-group
+      v-model:value="completion"
+      class="house-completion-filter"
+      :aria-label="t(k + 'completed')"
+      button-style="solid"
+    >
+      <a-radio-button value="all">{{ t(k + 'allStatuses') }}</a-radio-button>
+      <a-radio-button value="incomplete">{{ t(k + 'incomplete') }}</a-radio-button>
+      <a-radio-button value="complete">{{ t(k + 'complete') }}</a-radio-button>
+    </a-radio-group>
     <ExcelActions
       :project-name="projectName"
       kind="house"
@@ -124,7 +120,7 @@ async function remove(record: House) {
     </template>
     <template #completed="record">
       <j-badge-status
-        :status="record.completed ? 'success' : 'warning'"
+        :status="record.completed ? 'success' : 'default'"
         :text="t(k + (record.completed ? 'complete' : 'incomplete'))"
       />
     </template>
@@ -171,3 +167,8 @@ async function remove(record: House) {
     @retry="select(selectedId, readOnly)"
   />
 </template>
+<style scoped>
+.house-completion-filter {
+  margin-right: auto;
+}
+</style>

@@ -13,15 +13,16 @@ const props = defineProps<{
   }
 }>()
 const { t } = useI18n()
-const fields = computed(() =>
-  props.space.spaceSegments?.length
-    ? props.space.spaceSegments.map((node) => ({ label: node.typeName || t('Archive.spaceName'), value: node.name }))
-    : [
-        {
-          label: props.space.spaceTypeName || t('Archive.spaceName'),
-          value: props.space.name || props.space.spaceName || props.space.fullName || '—'
-        }
-      ]
-)
+const fields = computed(() => [
+  {
+    label: t('Archive.spacePath'),
+    value:
+      props.space.fullName ||
+      props.space.spaceSegments?.map((node) => node.name).join('/') ||
+      props.space.name ||
+      props.space.spaceName ||
+      '—'
+  }
+])
 </script>
-<template><KvGrid :items="fields" /></template>
+<template><KvGrid :items="fields" :cols="1" /></template>

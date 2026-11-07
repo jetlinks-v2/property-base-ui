@@ -90,10 +90,10 @@ const change = ({ filter }: ConditionFilterChangePayload) => {
   />
   <div class="archive-actions">
     <span
-      v-if="!space?.leaf || !houseCompleted"
+      v-if="!space || !houseCompleted"
       class="archive-muted"
     >
-      {{ t(k + (space?.leaf ? 'completeFirst' : 'selectLeaf')) }}
+      {{ t(k + (space ? 'completeFirst' : 'selectSpace')) }}
     </span>
     <ExcelActions
       :project-name="projectName"
@@ -107,14 +107,14 @@ const change = ({ filter }: ConditionFilterChangePayload) => {
       v-if="!history"
       hasPermission="charging/Customer:save"
       type="primary"
-      :disabled="!space?.leaf || !houseCompleted || houseLoading || houseFailed"
+      :disabled="!space || !houseCompleted || houseLoading || houseFailed"
       @click="creating = true"
     >
       {{ t(k + 'addCustomer') }}
     </j-permission-button>
   </div>
   <router-link
-    v-if="space?.leaf && !houseCompleted && !houseLoading && !houseFailed && !history"
+    v-if="space && !houseCompleted && !houseLoading && !houseFailed && !history"
     to="/charging/basic/spaces"
   >
     {{ t(k + 'goCompleteHouse') }}

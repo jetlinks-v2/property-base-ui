@@ -64,6 +64,10 @@ const scopeModule = await load('../hooks/archive/useArchiveScope.ts', [
 ])
 const dictionaryModule = await load('../hooks/archive/useDictionaries.ts', ['getDictionaryTypes', 'getDictionaryItems'])
 const houseModule = await load('../hooks/archive/useHouseEditor.ts', ['getHouse', 'saveHouse'])
+const houseQueryModule = await load('../hooks/archive/useHouseQuery.ts')
+const customerListModule = await load('../hooks/archive/useCustomerList.ts', [
+  'getHouse', 'checked', 'queryCustomers', 'queryHistory'
+])
 const customerDetailModule = await load('../hooks/archive/useCustomerDetail.ts', [
   'getCustomer',
   'saveCustomer',
@@ -126,6 +130,62 @@ function mount(create, api = {}) {
   app.mount({})
   return { state, unmount: () => app.unmount() }
 }
+
+test('非末级空间通过已完善资料判定客户关联资格，未完善不能关联', async () => {
+  for (const completed of [true, false]) {
+    const calls = []
+    const mounted = mount(
+      () => customerListModule.useCustomerList({ projectId: 'project', spaceId: 'building' },
+        { id: 'building', name: '1栋', leaf: false, version: 0 }),
+      { getHouse: async (scope, id) => { calls.push(id); return { completed } } }
+    )
+    await settle()
+    assert.deepEqual(calls, ['building'])
+    assert.equal(mounted.state.houseCompleted.value, completed)
+    assert.equal(mounted.state.houseFailed.value, false)
+    mounted.unmount()
+  }
+})
+
+test('空间资料快捷切换保留搜索分组，全部解除状态限制，导出使用相同条件', () => {
+  const state = houseQueryModule.useHouseQuery()
+  assert.deepEqual(state.params.value.terms, [])
+  const search = [
+    { column: 'name', termType: 'like', value: '%101%' },
+    { column: 'name', termType: 'like', value: '%102%', type: 'or' }
+  ]
+  state.change({ filter: { terms: search } })
+  state.completion.value = 'incomplete'
+  assert.deepEqual(state.params.value.terms, [
+    { terms: search }, { column: 'completed', termType: 'eq', value: false }
+  ])
+  state.completion.value = 'complete'
+  assert.equal(state.params.value.terms[1].value, true)
+  state.completion.value = 'all'
+  assert.deepEqual(state.params.value.terms, [{ terms: search }])
+  state.change({ filter: { terms: [] } })
+  assert.deepEqual(state.params.value.terms, [])
+})
+
+test('空间资料请求失败保持禁止关联，离开后旧响应不恢复资格', async () => {
+  const old = deferred()
+  const mounted = mount(
+    () => customerListModule.useCustomerList({ projectId: 'project' }, { id: 'building', leaf: false }),
+    { getHouse: async () => old.promise }
+  )
+  mounted.unmount()
+  old.resolve({ completed: true })
+  await settle()
+  assert.equal(mounted.state.houseCompleted.value, false)
+  const failed = mount(
+    () => customerListModule.useCustomerList({ projectId: 'project' }, { id: 'building', leaf: false }),
+    { getHouse: async () => { throw new Error('denied') } }
+  )
+  await settle()
+  assert.equal(failed.state.houseFailed.value, true)
+  assert.equal(failed.state.houseCompleted.value, false)
+  failed.unmount()
+})
 test('客户请求展示业务响应，HTTP或网络异常无业务提示时使用页面文案', () => {
   const transport = Object.assign(new Error('Network Error'), { isAxiosError: true })
   assert.equal(errors.requestErrorMessage(transport, '保存失败，请重试'), '保存失败，请重试')

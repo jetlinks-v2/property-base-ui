@@ -36,7 +36,7 @@ interface TreeNode {
 const toTree = (nodes: Space[]): TreeNode[] =>
   nodes.map((node) => ({
     key: node.id,
-    title: node.spaceTypeName ? `${node.name} · ${node.spaceTypeName}` : node.name,
+    title: node.name,
     children: toTree(node.children || [])
   }))
 const treeData = computed(() => toTree(visibleTree.value))

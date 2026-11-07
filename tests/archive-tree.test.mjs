@@ -57,6 +57,8 @@ async function loadComponent(path) {
               ? 'export const onlyMessage = () => {}'
               : path === '@jetlinks-web-core/layout'
               ? 'export const FullPage = (_, {slots}) => slots.default?.()'
+              : path.includes('/KvGrid/')
+              ? `import {defineComponent, h} from 'vue'; export default defineComponent({props: ['items'], setup(props) {return () => {globalThis.__spaceFields = props.items; return h('grid')}}})`
               : 'export default () => null'
           }))
         }
@@ -71,6 +73,7 @@ async function loadComponent(path) {
 const Workspace = await loadComponent('../views/charging/components/ArchiveWorkspace.vue')
 const Dictionary = await loadComponent('../views/charging/Dictionary/index.vue')
 const ProjectSelect = await loadComponent('../components/ProjectSelect.vue')
+const SpaceInformation = await loadComponent('../views/charging/components/SpaceInformation.vue')
 const settle = async () => {
   await new Promise((resolve) => setImmediate(resolve))
   await nextTick()
@@ -170,6 +173,16 @@ function mount(component, api, props = {}) {
   return { tree: () => tree, table: () => table, projectSelect: () => projectSelect, scopes, unmount: () => app.unmount() }
 }
 
+test('空间信息只展示完整路径，已有类型及分层信息不再拆成字段', async (t) => {
+  const fullName = '5G园区/A组团/1栋/2单元/101'
+  const view = mount(SpaceInformation, {}, {space: {
+    name: '101', fullName, spaceTypeName: '房间号',
+    spaceSegments: [{name: '5G园区', typeName: '项目'}, {name: '101', typeName: '房间号'}]
+  }})
+  t.after(view.unmount)
+  assert.deepEqual(globalThis.__spaceFields, [{label: 'Archive.spacePath', value: fullName}])
+})
+
 test('公共项目选择可供业务模块使用：禁止非项目，项目发出更新事件，下拉宽度随内容展开', async (t) => {
   const values = []
   const view = mount(ProjectSelect, {}, {
@@ -203,6 +216,7 @@ test('空间和客户共用树：选中房屋保持高亮并向右侧传递所�
       {
         id: 'root',
         name: '园区',
+        spaceTypeName: '项目',
         leaf: false,
         children: [
           { id: '101', name: '101', leaf: true },
@@ -215,6 +229,10 @@ test('空间和客户共用树：选中房屋保持高亮并向右侧传递所�
   t.after(view.unmount)
   await settle()
   await settle()
+  assert.equal(view.tree().props.treeData[0].title, '园区')
+  view.tree().select(['root'])
+  await settle()
+  assert.equal(view.scopes.at(-1).spaceId, 'root')
   view.tree().select(['101'])
   await settle()
   assert.deepEqual(view.tree().props.selectedKeys, ['101'])

@@ -70,14 +70,20 @@ const submit = async () => {
         </template>
       </a-result>
       <template v-else-if="house">
-        <SpaceLocation :space="house" />
+        <SpaceLocation
+          v-if="!state.readOnly"
+          :space="house"
+        />
         <template v-if="state.readOnly">
           <section class="archive-detail-group">
             <h3 class="archive-section-title">
               <AIcon type="HomeOutlined" />
               {{ t(k + 'spaceInformation') }}
             </h3>
-            <SpaceInformation :space="house" />
+            <SpaceInformation
+              :space="house"
+              class="house-space-path"
+            />
             <KvGrid
               :items="[
                 { label: t(k + 'houseType'), value: dictionary.text('house-type', house.houseType) },
@@ -204,3 +210,8 @@ const submit = async () => {
     </template>
   </JlDrawerShell>
 </template>
+<style scoped>
+.house-space-path {
+  margin-bottom: 20px;
+}
+</style>
