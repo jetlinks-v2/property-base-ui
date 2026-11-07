@@ -35,6 +35,7 @@ export interface Space {
   organizationId?: string | null
   version: number
   leaf: boolean
+  customerBound?: boolean
   children?: Space[]
 }
 export interface DictionaryType {
@@ -149,8 +150,8 @@ export const getSpaceProjects = () =>
 export const getSpaceRoots = () => request.get<Space[]>(`${base}/space/_roots`).then(checked)
 export const getSpaceRootTree = (rootId: string) =>
   request.get<Space[]>(`${base}/space/${id(rootId)}/_tree`).then(checked)
-export const getSpaceTree = (projectId: string) =>
-  request.get<Space[]>(`${base}/space/_tree?${scopeQuery({ projectId })}`).then(checked)
+export const getSpaceTree = (projectId: string, customerBound = false) =>
+  request.get<Space[]>(`${base}/space/_tree?${scopeQuery({ projectId })}${customerBound ? '&customerBound=true' : ''}`).then(checked)
 export const bindSpaceRoot = (rootId: string, organizationId: string | null, version: number) =>
   request.put<Space>(`${base}/space/${id(rootId)}/organization`, { organizationId, version }).then(checked)
 export const syncSpaces = () =>
