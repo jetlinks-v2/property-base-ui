@@ -1,6 +1,6 @@
 import { request as hostRequest, type Request } from '@jetlinks-web/core'
 
-const request: Pick<Request, 'get' | 'put' | 'post'> = hostRequest
+const request: Pick<Request, 'get' | 'put' | 'post' | 'remove'> = hostRequest
 
 export type OrganizationTypeValue = 'project' | 'external'
 export interface OrganizationType {
@@ -45,17 +45,21 @@ export const setOrganizationType = (id: string, organizationType: OrganizationTy
 export const synchronizeOrganizations = () => request.post<OrganizationSyncResult>(`${base}/_sync`)
 export const getOrganizationSyncStatus = () => request.get<OrganizationSyncStatus>(`${base}/_sync/status`)
 
-/** fileId=null 仅清除引用；版本与组织类型标注共享，冲突时不得自动重试。 */
-export const setProjectSeal = (id: string, fileId: string | null, version: number) =>
-  request.put<PropertyOrganization>(
-    `${base}/${encodeURIComponent(id)}/seal`,
-    { fileId, version },
+/** 仅清除项目引用，不删除历史文件；与组织类型共享版本，冲突不得自动重试。 */
+export const removeProjectSeal = (id: string, version: number) =>
+  request.remove<PropertyOrganization>(
+    `${base}/${encodeURIComponent(id)}/project-seal?version=${version}`,
+    {},
     { hiddenError: true }
   )
 
-/** 复用平台文件上传，不保存图片地址或客户端声明的文件元数据。 */
-export const uploadProjectSeal = (file: File) => {
+/** 基础服务校验项目和真实图片，上传公共文件并保存引用；客户端不分步提交文件 ID。 */
+export const uploadProjectSeal = (id: string, version: number, file: File) => {
   const body = new FormData()
   body.append('file', file)
-  return request.post<{ id: string }>('/file/upload', body, { hiddenError: true })
+  return request.put<PropertyOrganization>(
+    `${base}/${encodeURIComponent(id)}/project-seal?version=${version}`,
+    body,
+    { hiddenError: true }
+  )
 }

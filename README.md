@@ -44,3 +44,11 @@ docs/                引用文档
 `views/charging`、菜单 `charging/*` 编码和 `/charging/basic/*` 地址是历史兼容标识，不表示公共模块依赖收费模块。不要仅为统一命名修改它们，避免已有菜单与按钮授权失效。
 
 独立仓库：`git@github.com:jetlinks-v2/property-base-ui.git`，维护分支 `2.20`。宿主按引用文档登记 Git 子模块，业务源码不作为 runtime-ui 主仓库的普通目录提交。
+
+## 项目章
+
+维护入口仅在基础数据管理的组织架构（兼容菜单编码 `charging/OrganizationType`）中；只有标记为项目的组织显示上传、预览、替换和移除操作，不要求先关联空间。装修等业务仅通过基础服务的公开命令读取项目章，不另外维护图片。
+
+上传和保存合并为 `PUT /property/organization/{id}/project-seal?version=...`，multipart 字段为 `file`；移除使用同路径 DELETE 并携带当前版本。两者需要既有 `seal` 动作和组织资产写权限，版本冲突刷新详情，不自动重试。PNG/JPEG 限制为 2MB，由后端校验真实格式及最大 4096×4096 像素；组织只保存后端上传得到的文件引用。文件传输复用现有公共文件服务，不修改 SaaS 平台代码或数据。
+
+验证入口：`tests/project-seal.test.mjs` 覆盖上传/移除请求契约、权限、文件限制、版本冲突和切换组织时迟到响应隔离；实际联调还须基础服务配置可达的 `property.files.server-id` 并具备现有项目章维护权限，不通过重建平台菜单或扩大授权绕过。

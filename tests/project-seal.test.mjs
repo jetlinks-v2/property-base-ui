@@ -23,7 +23,7 @@ const result = await build({
         }))
         builder.onLoad({ filter: /.*/, namespace: 'mock' }, (args) => ({
           contents: args.path.includes('api/organization')
-            ? 'export const uploadProjectSeal = (...args) => globalThis.__seal.upload(...args); export const setProjectSeal = (...args) => globalThis.__seal.save(...args)'
+            ? 'export const uploadProjectSeal = (...args) => globalThis.__seal.upload(...args); export const removeProjectSeal = (...args) => globalThis.__seal.remove(...args)'
             : args.path === 'vue-i18n'
               ? 'export const useI18n = () => ({t: key => key})'
               : args.path.includes('hooks')
@@ -64,13 +64,13 @@ function mount(overrides = {}) {
   globalThis.__seal = {
     allowed: ref(true),
     messages,
-    upload: async (image) => {
-      calls.push(['upload', image])
-      return success({ id: 'new' })
+    upload: async (id, version, image) => {
+      calls.push(['upload', id, version, image])
+      return success({ ...organization.value, projectSealFileId: 'new', version: version + 1 })
     },
-    save: async (id, fileId, version) => {
-      calls.push(['save', id, fileId, version])
-      return success({ ...organization.value, projectSealFileId: fileId, version: version + 1 })
+    remove: async (id, version) => {
+      calls.push(['remove', id, version])
+      return success({ ...organization.value, projectSealFileId: null, version: version + 1 })
     },
     ...overrides
   }
@@ -88,18 +88,21 @@ function mount(overrides = {}) {
   return { state, organization, calls, saved, stale, messages, stop: () => scope.stop() }
 }
 
-test('项目章上传后用平台文件ID和最新版本保存；替换和删除不删除文件', async () => {
+test('项目章在组织接口一次上传并保存，替换和移除使用最新版本', async () => {
   const m = mount()
   try {
     assert.equal(m.state.imageUrl.value, '/file/old')
-    await m.state.persist(file())
-    assert.deepEqual(m.calls[1], ['save', 'park', 'new', 4])
+    const image = file()
+    await m.state.persist(image)
+    assert.deepEqual(m.calls, [['upload', 'park', 4, image]])
     assert.equal(m.organization.value.version, 5)
     assert.equal(m.state.imageUrl.value, '/file/new')
+    await m.state.persist(image)
+    assert.deepEqual(m.calls[1], ['upload', 'park', 5, image])
     await m.state.persist(null)
-    assert.deepEqual(m.calls[2], ['save', 'park', null, 5])
+    assert.deepEqual(m.calls[2], ['remove', 'park', 6])
     assert.equal(m.state.imageUrl.value, '')
-    assert.equal(m.saved.length, 2)
+    assert.equal(m.saved.length, 3)
     assert.equal(m.state.busy.value, false)
   } finally {
     m.stop()
@@ -109,7 +112,7 @@ test('项目章上传后用平台文件ID和最新版本保存；替换和删除
 test('无权限、非项目、文件类型或大小不符时不上传不保存', async () => {
   const m = mount()
   try {
-    for (const image of [file('image/svg+xml'), file('image/png', 0), file('image/jpeg', 5 * 1024 * 1024 + 1)]) {
+    for (const image of [file('image/svg+xml'), file('image/png', 0), file('image/jpeg', 2 * 1024 * 1024 + 1)]) {
       await m.state.persist(image)
     }
     assert.equal(m.messages.length, 3)
@@ -126,23 +129,26 @@ test('无权限、非项目、文件类型或大小不符时不上传不保存',
   }
 })
 
-test('上传失败保留原章；保存失败提示并请求刷新，不自动重试', async () => {
+test('上传保存或移除失败保留原章，并刷新不确定结果，不自动重试', async () => {
+  let attempts = 0
   const m = mount({
     upload: async () => {
+      attempts++
       throw new Error('upload failed')
     }
   })
   try {
     await m.state.persist(file())
     assert.equal(m.organization.value.projectSealFileId, 'old')
-    assert.equal(m.stale.length, 0)
-    globalThis.__seal.upload = async () => success({ id: 'new' })
-    globalThis.__seal.save = async () => {
+    assert.equal(m.stale.length, 1)
+    globalThis.__seal.remove = async () => {
+      attempts++
       throw { response: { data: { message: '版本冲突' } } }
     }
-    await m.state.persist(file())
+    await m.state.persist(null)
     assert.equal(m.organization.value.projectSealFileId, 'old')
-    assert.equal(m.stale.length, 1)
+    assert.equal(m.stale.length, 2)
+    assert.equal(attempts, 2)
     assert.equal(m.saved.length, 0)
     assert.equal(m.messages.length, 2)
     assert.equal(m.state.busy.value, false)
@@ -153,17 +159,21 @@ test('上传失败保留原章；保存失败提示并请求刷新，不自动�
 
 test('重复点击只提交一次；上传期间切换组织不会把文件存入另一组织', async () => {
   const pending = deferred()
-  const m = mount({ upload: () => pending.promise })
+  const calls = []
+  const m = mount({ upload: (...args) => { calls.push(args); return pending.promise } })
   try {
-    const first = m.state.persist(file())
+    const image = file()
+    const first = m.state.persist(image)
     await m.state.persist(file())
+    assert.deepEqual(calls, [['park', 4, image]])
     assert.equal(m.state.busy.value, true)
     m.organization.value = project('other')
     await nextTick()
-    pending.resolve(success({ id: 'new' }))
+    pending.resolve(success({ ...project(), projectSealFileId: 'new', version: 5 }))
     await first
-    assert.deepEqual(m.calls, [])
     assert.equal(m.saved.length, 0)
+    assert.equal(m.messages.length, 0)
+    assert.equal(m.organization.value.id, 'other')
     assert.equal(m.state.busy.value, false)
   } finally {
     m.stop()
@@ -173,7 +183,7 @@ test('重复点击只提交一次；上传期间切换组织不会把文件存�
 test('保存期间切换组织或卸载，迟到响应不更新当前详情', async () => {
   for (const unload of [false, true]) {
     const pending = deferred()
-    const m = mount({ save: () => pending.promise })
+    const m = mount({ remove: () => pending.promise })
     const task = m.state.persist(null)
     if (unload) m.stop()
     else {
@@ -188,7 +198,7 @@ test('保存期间切换组织或卸载，迟到响应不更新当前详情', as
   }
 })
 
-test('项目章请求复用宿主上传接口，清除显式发送null，错误由局部提示处理', async () => {
+test('项目章仅调用组织受控multipart和移除接口，不调用平台上传或提交任意文件ID', async () => {
   const bundled = await build({
     entryPoints: [fileURLToPath(new URL('../api/organization.ts', import.meta.url))],
     bundle: true,
@@ -208,18 +218,35 @@ test('项目章请求复用宿主上传接口，清除显式发送null，错误�
     ]
   })
   const calls = []
-  globalThis.__sealRequest = { post: (...args) => calls.push(args), put: (...args) => calls.push(args) }
+  globalThis.__sealRequest = {
+    put: (...args) => calls.push(['put', ...args]),
+    remove: (...args) => calls.push(['delete', ...args])
+  }
   const apiModule = { exports: {} }
   new Function('require', 'module', 'exports', bundled.outputFiles[0].text)(require, apiModule, apiModule.exports)
-  apiModule.exports.uploadProjectSeal(new Blob(['image'], { type: 'image/png' }))
-  apiModule.exports.setProjectSeal('park/id', null, 4)
-  assert.equal(calls[0][0], '/file/upload')
-  assert.ok(calls[0][1] instanceof FormData)
-  assert.equal(calls[0][1].get('file').size, 5)
-  assert.deepEqual(calls[0][2], { hiddenError: true })
+  apiModule.exports.uploadProjectSeal('park/id', 4, new Blob(['image'], { type: 'image/png' }))
+  apiModule.exports.removeProjectSeal('park/id', 5)
+  assert.equal(calls[0][0], 'put')
+  assert.equal(calls[0][1], '/property/organization/park%2Fid/project-seal?version=4')
+  assert.ok(calls[0][2] instanceof FormData)
+  assert.deepEqual([...calls[0][2].keys()], ['file'])
+  assert.equal(calls[0][2].get('file').size, 5)
+  assert.deepEqual(calls[0][3], { hiddenError: true })
   assert.deepEqual(calls[1], [
-    '/property/organization/park%2Fid/seal',
-    { fileId: null, version: 4 },
+    'delete',
+    '/property/organization/park%2Fid/project-seal?version=5',
+    {},
     { hiddenError: true }
   ])
+})
+
+test('2MB边界图片允许提交；失败响应不能冒充已保存的组织', async () => {
+  const m = mount({ upload: async () => ({ success: false, message: '图片校验失败' }) })
+  try {
+    await m.state.persist(file('image/jpeg', 2 * 1024 * 1024))
+    assert.equal(m.saved.length, 0)
+    assert.equal(m.messages.length, 1)
+    assert.equal(m.stale.length, 1)
+    assert.equal(m.organization.value.projectSealFileId, 'old')
+  } finally { m.stop() }
 })
